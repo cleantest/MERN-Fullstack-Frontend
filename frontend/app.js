@@ -1,0 +1,239 @@
+new Vue({
+    el: '#app',
+    data: {
+        showCart: false,
+        showCheckout: false,
+        showSuccess: false,
+        cartItems: [],
+        checkoutForm: {
+            parentName: '',
+            phone: ''
+        },
+        searchQuery: '',
+    // Uncomment the next line to enable sorting controls wired to `sortOption` in the template
+     sortOption: '', // possible values: '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
+        lessons: [
+            {
+                id: 1,
+                subject: 'Football Training',
+                location: 'Sports Hall A',
+                price: 15,
+                spaces: 8,
+                icon: 'icons/football.png'
+            },
+            {
+                id: 2,
+                subject: 'Art & Crafts',
+                location: 'Art Room 2B',
+                price: 12,
+                spaces: 5,
+                icon: 'icons/art.png'
+            },
+            {
+                id: 3,
+                subject: 'Piano Lessons',
+                location: 'Music Room 1',
+                price: 25,
+                spaces: 3,
+                icon: 'icons/piano.png'
+            },
+            {
+                id: 4,
+                subject: 'Drama Club',
+                location: 'Main Hall',
+                price: 18,
+                spaces: 12,
+                icon: 'icons/drama.png'
+            },
+            {
+                id: 5,
+                subject: 'Chess Club',
+                location: 'Library',
+                price: 10,
+                spaces: 0,
+                icon: 'icons/chess.png'
+            },
+            {
+                id: 6,
+                subject: 'Swimming',
+                location: 'Pool Complex',
+                price: 20,
+                spaces: 6,
+                icon: 'icons/swimming.png'
+            },
+            {
+                id: 7,
+                subject: 'Coding for Kids',
+                location: 'Computer Lab',
+                price: 22,
+                spaces: 4,
+                icon: 'icons/coding.png'
+            },
+            {
+                id: 8,
+                subject: 'Dance Classes',
+                location: 'Dance Studio',
+                price: 16,
+                spaces: 9,
+                icon: 'icons/dance.png'
+            },
+            {
+                id: 9,
+                subject: 'Science Club',
+                location: 'Lab Room 3C',
+                price: 14,
+                spaces: 7,
+                icon: 'icons/science.png'
+            },
+            {
+                id: 10,
+                subject: 'Basketball',
+                location: 'Gymnasium',
+                price: 17,
+                spaces: 2,
+                icon: 'icons/basketball.png'
+            },
+            {
+                id: 11,
+                subject: 'Cooking Class',
+                location: 'Kitchen Lab',
+                price: 19,
+                spaces: 6,
+                icon: 'icons/cooking.png'
+            },
+            {
+                id: 12,
+                subject: 'Guitar Lessons',
+                location: 'Music Room 2',
+                price: 24,
+                spaces: 1,
+                icon: 'icons/guitar.png'
+            }
+        ]
+    },
+    computed: {
+        cartTotal: function () {
+            return this.cartItems.reduce(function (total, item) {
+                return total + item.price;
+            }, 0);
+        },
+        isValidName: function () {
+            if (!this.checkoutForm.parentName) return true;
+            return /^[a-zA-Z\s]+$/.test(this.checkoutForm.parentName);
+        },
+        isValidPhone: function () {
+            if (!this.checkoutForm.phone) return true;
+            return /^\d+$/.test(this.checkoutForm.phone);
+        },
+        canCheckout: function () {
+            return this.isValidName &&
+                this.isValidPhone &&
+                this.checkoutForm.parentName.trim() !== '' &&
+                this.checkoutForm.phone.trim() !== '' &&
+                this.cartItems.length > 0;
+        },
+        filteredsearchResults: function () {
+            var self = this;
+            var query = this.searchQuery.trim().toLowerCase();
+
+            // Base results filtered by search query (subject or location)
+            var results = this.lessons.filter(function (lesson) {
+                if (!query) return true; // when no query, include all lessons
+                return lesson.subject.toLowerCase().includes(query) ||
+                    lesson.location.toLowerCase().includes(query);
+            });
+
+            // The following sorting logic is commented out. Uncomment to enable sorting
+            // using the `sortOption` data property (see above) and the sort controls in the HTML.
+            
+            if (this.sortOption) {
+                var opt = this.sortOption;
+                if (opt === 'price-asc') {
+                    // sort by price ascending
+                    results = results.slice().sort(function (a, b) {
+                        return a.price - b.price;
+                    });
+                } else if (opt === 'price-desc') {
+                    // sort by price descending
+                    results = results.slice().sort(function (a, b) {
+                        return b.price - a.price;
+                    });
+                } else if (opt === 'location-asc') {
+                    // sort by location A → Z (case-insensitive)
+                    results = results.slice().sort(function (a, b) {
+                        return a.location.toLowerCase().localeCompare(b.location.toLowerCase());
+                    });
+                } else if (opt === 'location-desc') {
+                    // sort by location Z → A (case-insensitive)
+                    results = results.slice().sort(function (a, b) {
+                        return b.location.toLowerCase().localeCompare(a.location.toLowerCase());
+                    });
+                }
+            }
+            
+
+            return results;
+        }
+
+    },
+    methods: {
+        toggleCart: function () {
+            this.showCart = !this.showCart;
+        },
+        addToCart: function (lesson) {
+            if (lesson.spaces > 0 && !this.isInCart(lesson)) {
+                // Find the lesson in the original array and reduce spaces
+                var originalLesson = this.lessons.find(function (l) {
+                    return l.id === lesson.id;
+                });
+                if (originalLesson) {
+                    originalLesson.spaces--;
+                }
+
+                // Add to cart
+                this.cartItems.push({
+                    id: lesson.id,
+                    subject: lesson.subject,
+                    location: lesson.location,
+                    price: lesson.price,
+                    icon: lesson.icon
+                });
+            }
+        },
+        removeFromCart: function (item) {
+            // Find and restore spaces
+            var originalLesson = this.lessons.find(function (l) {
+                return l.id === item.id;
+            });
+            if (originalLesson) {
+                originalLesson.spaces++;
+            }
+
+            // Remove from cart
+            var index = this.cartItems.findIndex(function (cartItem) {
+                return cartItem.id === item.id;
+            });
+            if (index > -1) {
+                this.cartItems.splice(index, 1);
+            }
+        },
+        isInCart: function (lesson) {
+            return this.cartItems.some(function (item) {
+                return item.id === lesson.id;
+            });
+        },
+        processCheckout: function () {
+            if (this.canCheckout) {
+                this.showCheckout = false;
+                this.showCart = false;
+                this.showSuccess = true;
+            }
+        },
+        resetApp: function () {
+            this.showSuccess = false;
+            this.cartItems = [];
+            this.checkoutForm.parentName = '';
+            this.checkoutForm.phone = '';
+        }
+    }
+});
