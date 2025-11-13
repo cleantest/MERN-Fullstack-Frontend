@@ -10,8 +10,7 @@ new Vue({
             phone: ''
         },
         searchQuery: '',
-    // Uncomment the next line to enable sorting controls wired to `sortOption` in the template
-     sortOption: '', // possible values: '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
+        sortOption: '', // '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
         lessons: [
             {
                 id: 1,
@@ -136,45 +135,35 @@ new Vue({
             var self = this;
             var query = this.searchQuery.trim().toLowerCase();
 
-            // Base results filtered by search query (subject or location)
             var results = this.lessons.filter(function (lesson) {
-                if (!query) return true; // when no query, include all lessons
+                if (!query) return true;
                 return lesson.subject.toLowerCase().includes(query) ||
                     lesson.location.toLowerCase().includes(query);
             });
 
-            // The following sorting logic is commented out. Uncomment to enable sorting
-            // using the `sortOption` data property (see above) and the sort controls in the HTML.
-            
             if (this.sortOption) {
                 var opt = this.sortOption;
                 if (opt === 'price-asc') {
-                    // sort by price ascending
                     results = results.slice().sort(function (a, b) {
                         return a.price - b.price;
                     });
                 } else if (opt === 'price-desc') {
-                    // sort by price descending
                     results = results.slice().sort(function (a, b) {
                         return b.price - a.price;
                     });
                 } else if (opt === 'location-asc') {
-                    // sort by location A → Z (case-insensitive)
                     results = results.slice().sort(function (a, b) {
                         return a.location.toLowerCase().localeCompare(b.location.toLowerCase());
                     });
                 } else if (opt === 'location-desc') {
-                    // sort by location Z → A (case-insensitive)
                     results = results.slice().sort(function (a, b) {
                         return b.location.toLowerCase().localeCompare(a.location.toLowerCase());
                     });
                 }
             }
-            
 
             return results;
         }
-
     },
     methods: {
         toggleCart: function () {
@@ -182,7 +171,6 @@ new Vue({
         },
         addToCart: function (lesson) {
             if (lesson.spaces > 0 && !this.isInCart(lesson)) {
-                // Find the lesson in the original array and reduce spaces
                 var originalLesson = this.lessons.find(function (l) {
                     return l.id === lesson.id;
                 });
@@ -190,7 +178,6 @@ new Vue({
                     originalLesson.spaces--;
                 }
 
-                // Add to cart
                 this.cartItems.push({
                     id: lesson.id,
                     subject: lesson.subject,
@@ -200,8 +187,9 @@ new Vue({
                 });
             }
         },
+
+        // ✅ Inserted from your extracted code:
         removeFromCart: function (item) {
-            // Find and restore spaces
             var originalLesson = this.lessons.find(function (l) {
                 return l.id === item.id;
             });
@@ -209,7 +197,6 @@ new Vue({
                 originalLesson.spaces++;
             }
 
-            // Remove from cart
             var index = this.cartItems.findIndex(function (cartItem) {
                 return cartItem.id === item.id;
             });
