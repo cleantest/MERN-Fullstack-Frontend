@@ -9,7 +9,7 @@ new Vue({
             parentName: '',
             phone: ''
         },
-       // searchQuery: '',
+       searchQuery: '',
        // sortOption: '', // '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
         lessons: [
             {
@@ -132,8 +132,8 @@ new Vue({
                 this.cartItems.length > 0;
         },
         filteredsearchResults: function () {
-           //work in progress
-            /*var self = this;
+          
+            var self = this;
             var query = this.searchQuery.trim().toLowerCase();
 
             var results = this.lessons.filter(function (lesson) {
@@ -141,11 +141,7 @@ new Vue({
                 return lesson.subject.toLowerCase().includes(query) ||
                     lesson.location.toLowerCase().includes(query);
             });
-            */
-              //  Search disabled → simply return all lessons
-            var results = this.lessons;
-
-            //  Sorting functionality also removed previously
+            
             return results;
 //Sorting functionality in progress
          /*   if (this.sortOption) {
@@ -195,7 +191,7 @@ new Vue({
             }
         },
 
-        // ✅ Inserted from your extracted code:
+        //  removed added cart items:
         removeFromCart: function (item) {
             var originalLesson = this.lessons.find(function (l) {
                 return l.id === item.id;
