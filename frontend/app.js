@@ -9,8 +9,8 @@ new Vue({
             parentName: '',
             phone: ''
         },
-        searchQuery: '',
-        sortOption: '', // '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
+       // searchQuery: '',
+       // sortOption: '', // '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
         lessons: [
             {
                 id: 1,
@@ -132,7 +132,8 @@ new Vue({
                 this.cartItems.length > 0;
         },
         filteredsearchResults: function () {
-            var self = this;
+           //work in progress
+            /*var self = this;
             var query = this.searchQuery.trim().toLowerCase();
 
             var results = this.lessons.filter(function (lesson) {
@@ -140,8 +141,14 @@ new Vue({
                 return lesson.subject.toLowerCase().includes(query) ||
                     lesson.location.toLowerCase().includes(query);
             });
+            */
+              //  Search disabled → simply return all lessons
+            var results = this.lessons;
 
-            if (this.sortOption) {
+            //  Sorting functionality also removed previously
+            return results;
+//Sorting functionality in progress
+         /*   if (this.sortOption) {
                 var opt = this.sortOption;
                 if (opt === 'price-asc') {
                     results = results.slice().sort(function (a, b) {
@@ -161,8 +168,8 @@ new Vue({
                     });
                 }
             }
-
-            return results;
+*/
+    
         }
     },
     methods: {
