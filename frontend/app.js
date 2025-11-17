@@ -10,7 +10,7 @@ new Vue({
             phone: ''
         },
        searchQuery: '',
-       // sortOption: '', // '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
+       sortOption: '', // '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
         lessons: [
             {
                 id: 1,
@@ -143,8 +143,8 @@ new Vue({
             });
             
             return results;
-//Sorting functionality in progress
-         /*   if (this.sortOption) {
+//Sorting functionality 
+           if (this.sortOption) {
                 var opt = this.sortOption;
                 if (opt === 'price-asc') {
                     results = results.slice().sort(function (a, b) {
@@ -164,7 +164,7 @@ new Vue({
                     });
                 }
             }
-*/
+
     
         }
     },
