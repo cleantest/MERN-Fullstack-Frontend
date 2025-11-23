@@ -1,6 +1,7 @@
 new Vue({
     el: '#app',
     data: {
+        appURL: 'https://mern-fullstack-backend-xct9.onrender.com',
         showCart: false,
         showCheckout: false,
         showSuccess: false,
@@ -11,104 +12,7 @@ new Vue({
         },
        searchQuery: '',
        sortOption: '', // '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
-        lessons: [
-            {
-                id: 1,
-                subject: 'Football Training',
-                location: 'Sports Hall A',
-                price: 15,
-                spaces: 8,
-                icon: 'icons/football.png'
-            },
-            {
-                id: 2,
-                subject: 'Art & Crafts',
-                location: 'Art Room 2B',
-                price: 12,
-                spaces: 5,
-                icon: 'icons/art.png'
-            },
-            {
-                id: 3,
-                subject: 'Piano Lessons',
-                location: 'Music Room 1',
-                price: 25,
-                spaces: 3,
-                icon: 'icons/piano.png'
-            },
-            {
-                id: 4,
-                subject: 'Drama Club',
-                location: 'Main Hall',
-                price: 18,
-                spaces: 12,
-                icon: 'icons/drama.png'
-            },
-            {
-                id: 5,
-                subject: 'Chess Club',
-                location: 'Library',
-                price: 10,
-                spaces: 0,
-                icon: 'icons/chess.png'
-            },
-            {
-                id: 6,
-                subject: 'Swimming',
-                location: 'Pool Complex',
-                price: 20,
-                spaces: 6,
-                icon: 'icons/swimming.png'
-            },
-            {
-                id: 7,
-                subject: 'Coding for Kids',
-                location: 'Computer Lab',
-                price: 22,
-                spaces: 4,
-                icon: 'icons/coding.png'
-            },
-            {
-                id: 8,
-                subject: 'Dance Classes',
-                location: 'Dance Studio',
-                price: 16,
-                spaces: 9,
-                icon: 'icons/dance.png'
-            },
-            {
-                id: 9,
-                subject: 'Science Club',
-                location: 'Lab Room 3C',
-                price: 14,
-                spaces: 7,
-                icon: 'icons/science.png'
-            },
-            {
-                id: 10,
-                subject: 'Basketball',
-                location: 'Gymnasium',
-                price: 17,
-                spaces: 2,
-                icon: 'icons/basketball.png'
-            },
-            {
-                id: 11,
-                subject: 'Cooking Class',
-                location: 'Kitchen Lab',
-                price: 19,
-                spaces: 6,
-                icon: 'icons/cooking.png'
-            },
-            {
-                id: 12,
-                subject: 'Guitar Lessons',
-                location: 'Music Room 2',
-                price: 24,
-                spaces: 1,
-                icon: 'icons/guitar.png'
-            }
-        ]
+        lessons: []
     },
     computed: {
         cartTotal: function () {
@@ -168,7 +72,21 @@ new Vue({
     
         }
     },
+     created() {
+        this.fetchLessons();
+    },
     methods: {
+           // Fetch lessons from the backend
+        fetchLessons: function () {
+            fetch(`${this.appURL}/lessons`)
+                .then(response => response.json())
+                .then(data => {
+                    this.lessons = data;
+                })
+                .catch(error => {
+                    console.error("Error fetching lessons:", error);
+                });
+        },
         toggleCart: function () {
             this.showCart = !this.showCart;
         },

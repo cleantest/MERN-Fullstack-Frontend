@@ -157,7 +157,9 @@
           class="lesson-card"
           :class="{ 'sold-out': lesson.spaces === 0 }"
         >
-          <img :src="lesson.icon" :alt="lesson.subject" class="lesson-icon" />
+          <!--<img :src="lesson.icon" :alt="lesson.subject" class="lesson-icon" /> -->
+          <img :src="appURL + lesson.icon" />
+
           <div class="lesson-info">
             <h3>{{ lesson.subject }}</h3>
             <p class="location">{{ lesson.location }}</p>
