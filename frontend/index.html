@@ -35,7 +35,7 @@
       <div v-else class="cart-content">
         <div class="cart-items">
           <div v-for="item in cartItems" :key="item.id" class="cart-item-card">
-            <img :src="item.icon" :alt="item.subject" class="cart-icon" />
+            <img :src="appURL + '/' + item.icon" :alt="item.subject" class="cart-icon" />
             <div class="cart-item-details">
               <h3>{{ item.subject }}</h3>
               <p class="location">{{ item.location }}</p>
@@ -158,7 +158,7 @@
           :class="{ 'sold-out': lesson.spaces === 0 }"
         >
           <!--<img :src="lesson.icon" :alt="lesson.subject" class="lesson-icon" /> -->
-          <img :src="appURL + lesson.icon" />
+          <img :src="appURL + '/' + lesson.icon" />
 
           <div class="lesson-info">
             <h3>{{ lesson.subject }}</h3>
