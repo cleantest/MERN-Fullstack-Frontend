@@ -19,6 +19,7 @@ new Vue({
             return this.cartItems.reduce(function (total, item) {
                 return total + item.price;
             }, 0);
+            
         },
         isValidName: function () {
             if (!this.checkoutForm.parentName) return true;
@@ -35,44 +36,51 @@ new Vue({
                 this.checkoutForm.phone.trim() !== '' &&
                 this.cartItems.length > 0;
         },
-        filteredsearchResults: function () {
-          
-            var self = this;
-            var query = this.searchQuery.trim().toLowerCase();
 
-            var results = this.lessons.filter(function (lesson) {
-                if (!query) return true;
+        filteredResults: function () {
+
+          const query = this.searchQuery.trim().toLowerCase();
+            if (!query) return this.lessons; // Return all lessons if no query
+
+            // Filter by subject or location
+            return this.lessons.filter(lesson => {
                 return lesson.subject.toLowerCase().includes(query) ||
                     lesson.location.toLowerCase().includes(query);
             });
-            
-            return results;
-//Sorting functionality 
-           if (this.sortOption) {
-                var opt = this.sortOption;
-                if (opt === 'price-asc') {
-                    results = results.slice().sort(function (a, b) {
-                        return a.price - b.price;
-                    });
-                } else if (opt === 'price-desc') {
-                    results = results.slice().sort(function (a, b) {
-                        return b.price - a.price;
-                    });
-                } else if (opt === 'location-asc') {
-                    results = results.slice().sort(function (a, b) {
-                        return a.location.toLowerCase().localeCompare(b.location.toLowerCase());
-                    });
-                } else if (opt === 'location-desc') {
-                    results = results.slice().sort(function (a, b) {
-                        return b.location.toLowerCase().localeCompare(a.location.toLowerCase());
-                    });
+        },
+
+        // Sort lessons based on selected sort option
+        sortedResults: function () {
+            // Always sort the entire list of lessons
+            let results = [...this.lessons]; // Make a copy of the entire lessons list
+
+            if (this.sortOption) {
+                switch (this.sortOption) {
+                    case 'price-asc':
+                        results.sort((a, b) => a.price - b.price);
+                        break;
+                    case 'price-desc':
+                        results.sort((a, b) => b.price - a.price);
+                        break;
+                    case 'location-asc':
+                        results.sort((a, b) => a.location.toLowerCase().localeCompare(b.location.toLowerCase()));
+                        break;
+                    case 'location-desc':
+                        results.sort((a, b) => b.location.toLowerCase().localeCompare(a.location.toLowerCase()));
+                        break;
+                    default:
+                        break; // No sorting if no sortOption
                 }
             }
 
-    
+            // Now, return the results filtered by search query
+            return results.filter(lesson => {
+                const query = this.searchQuery.trim().toLowerCase();
+                return !query || lesson.subject.toLowerCase().includes(query) || lesson.location.toLowerCase().includes(query);
+            });
         }
     },
-     created() {
+    created() {
         this.fetchLessons();
     },
     methods: {
@@ -129,12 +137,38 @@ new Vue({
             return this.cartItems.some(function (item) {
                 return item.id === lesson.id;
             });
+
         },
+        saveOrder: function () {
+             const order = {
+                parentName: this.checkoutForm.parentName,
+                phone: this.checkoutForm.phone,
+                items: this.cartItems,
+                total: this.cartTotal,
+                timestamp: new Date().toISOString()
+            };
+
+            return fetch(`${this.appURL}/lessons/order`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(order)
+            })
+            .then(res => res.json())
+            .catch(err => {
+                console.error("Error saving order:", err);
+            });
+},
+
         processCheckout: function () {
             if (this.canCheckout) {
+                this.saveOrder().then(() => {
                 this.showCheckout = false;
                 this.showCart = false;
                 this.showSuccess = true;
+                 });
+
             }
         },
         resetApp: function () {
@@ -145,3 +179,4 @@ new Vue({
         }
     }
 });
+
