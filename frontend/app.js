@@ -95,17 +95,47 @@ new Vue({
                     console.error("Error fetching lessons:", error);
                 });
         },
+        
+    // POST order to backend
+    saveOrder: function () {
+        const order = {
+            parentName: this.checkoutForm.parentName,
+            phone: this.checkoutForm.phone,
+            items: this.cartItems,
+            total: this.cartTotal,
+            timestamp: new Date().toISOString()
+        };
+
+        return fetch(`${this.appURL}/lessons/order`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(order)
+        })
+        .then(res => res.json());
+    },
+
+    // PUT update lesson spaces in backend
+    /*updateLessonSpaces: function () {
+        const updates = this.cartItems.map(item => {
+            // find the lesson in the list to get the updated spaces count
+            const lesson = this.lessons.find(l => l.id === item.id);
+            return fetch(`${this.appURL}/lessons/${item.id}/spaces`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ spaces: lesson.spaces })
+            });
+        });
+
+        return Promise.all(updates);
+    },
+
         toggleCart: function () {
             this.showCart = !this.showCart;
         },
         addToCart: function (lesson) {
             if (lesson.spaces > 0 && !this.isInCart(lesson)) {
-                var originalLesson = this.lessons.find(function (l) {
-                    return l.id === lesson.id;
-                });
-                if (originalLesson) {
-                    originalLesson.spaces--;
-                }
+                lesson.spaces--;
+                
 
                 this.cartItems.push({
                     id: lesson.id,
@@ -116,59 +146,26 @@ new Vue({
                 });
             }
         },
-
-        //  removed added cart items:
+*/
+        /*/  removed added cart items:
         removeFromCart: function (item) {
-            var originalLesson = this.lessons.find(function (l) {
-                return l.id === item.id;
-            });
-            if (originalLesson) {
+            var originalLesson = this.lessons.find(l => l.id === item.id);
                 originalLesson.spaces++;
-            }
 
-            var index = this.cartItems.findIndex(function (cartItem) {
-                return cartItem.id === item.id;
-            });
-            if (index > -1) {
-                this.cartItems.splice(index, 1);
-            }
-        },
+                var index = this.cartItems.findIndex(cartItem => cartItem.id === item.id);
+                if (index > -1) this.cartItems.splice(index, 1);
+            },
+           
         isInCart: function (lesson) {
-            return this.cartItems.some(function (item) {
+            return this.cartItems.some(item => item.id === lesson.id); 
                 return item.id === lesson.id;
             });
-
         },
-        saveOrder: function () {
-             const order = {
-                parentName: this.checkoutForm.parentName,
-                phone: this.checkoutForm.phone,
-                items: this.cartItems,
-                total: this.cartTotal,
-                timestamp: new Date().toISOString()
-            };
-
-            return fetch(`${this.appURL}/lessons/order`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(order)
-            })
-            .then(res => res.json())
-            .catch(err => {
-                console.error("Error saving order:", err);
-            });
-},
-
         processCheckout: function () {
             if (this.canCheckout) {
-                this.saveOrder().then(() => {
                 this.showCheckout = false;
                 this.showCart = false;
                 this.showSuccess = true;
-                 });
-
             }
         },
         resetApp: function () {
