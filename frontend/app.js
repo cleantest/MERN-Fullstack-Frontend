@@ -14,73 +14,78 @@ new Vue({
        sortOption: '', // '', 'price-asc', 'price-desc', 'location-asc', 'location-desc'
         lessons: []
     },
+    
     computed: {
-        cartTotal: function () {
-            return this.cartItems.reduce(function (total, item) {
-                return total + item.price;
-            }, 0);
-            
-        },
-        isValidName: function () {
-            if (!this.checkoutForm.parentName) return true;
-            return /^[a-zA-Z\s]+$/.test(this.checkoutForm.parentName);
-        },
-        isValidPhone: function () {
-            if (!this.checkoutForm.phone) return true;
-            return /^\d+$/.test(this.checkoutForm.phone);
-        },
-        canCheckout: function () {
-            return this.isValidName &&
-                this.isValidPhone &&
-                this.checkoutForm.parentName.trim() !== '' &&
-                this.checkoutForm.phone.trim() !== '' &&
-                this.cartItems.length > 0;
-        },
+  cartTotal() {
+    return this.cartItems.reduce((total, item) => total + item.price, 0);
+  },
+    isValidName() {
+    if (!this.checkoutForm.parentName) return true;
+    return /^[a-zA-Z\s]+$/.test(this.checkoutForm.parentName);
+  },
 
-        filteredResults: function () {
+  isValidPhone() {
+    if (!this.checkoutForm.phone) return true;
+    return /^\d+$/.test(this.checkoutForm.phone);
+  },
 
-          const query = this.searchQuery.trim().toLowerCase();
-            if (!query) return this.lessons; // Return all lessons if no query
+  canCheckout() {
+    return (
+      this.isValidName &&
+      this.isValidPhone &&
+      this.checkoutForm.parentName.trim() !== '' &&
+      this.checkoutForm.phone.trim() !== '' &&
+      this.cartItems.length > 0
+    );
+  },
 
-            // Filter by subject or location
-            return this.lessons.filter(lesson => {
-                return lesson.subject.toLowerCase().includes(query) ||
-                    lesson.location.toLowerCase().includes(query);
-            });
-        },
+  // 🔍 Independent search results
+  filteredsearchResults() {
+    let query = this.searchQuery.trim().toLowerCase();
+    if (!query) return null; // means "no search applied"
 
-        // Sort lessons based on selected sort option
-        sortedResults: function () {
-            // Always sort the entire list of lessons
-            let results = [...this.lessons]; // Make a copy of the entire lessons list
+    return this.lessons.filter(lesson =>
+      lesson.subject.toLowerCase().includes(query) ||
+      lesson.location.toLowerCase().includes(query)
+    );
+  },
 
-            if (this.sortOption) {
-                switch (this.sortOption) {
-                    case 'price-asc':
-                        results.sort((a, b) => a.price - b.price);
-                        break;
-                    case 'price-desc':
-                        results.sort((a, b) => b.price - a.price);
-                        break;
-                    case 'location-asc':
-                        results.sort((a, b) => a.location.toLowerCase().localeCompare(b.location.toLowerCase()));
-                        break;
-                    case 'location-desc':
-                        results.sort((a, b) => b.location.toLowerCase().localeCompare(a.location.toLowerCase()));
-                        break;
-                    default:
-                        break; // No sorting if no sortOption
-                }
-            }
+  // ↕ Independent sorting results
+  sortedResults() {
+    let results = [...this.lessons];
 
-            // Now, return the results filtered by search query
-            return results.filter(lesson => {
-                const query = this.searchQuery.trim().toLowerCase();
-                return !query || lesson.subject.toLowerCase().includes(query) || lesson.location.toLowerCase().includes(query);
-            });
-        }
-    },
-    created() {
+    switch (this.sortOption) {
+      case 'price-asc':
+        results.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        results.sort((a, b) => b.price - a.price);
+        break;
+      case 'location-asc':
+        results.sort((a, b) =>
+          a.location.toLowerCase().localeCompare(b.location.toLowerCase())
+        );
+        break;
+      case 'location-desc':
+        results.sort((a, b) =>
+          b.location.toLowerCase().localeCompare(a.location.toLowerCase())
+        );
+        break;
+    }
+
+    return results;
+  },
+
+  // 🎯 Decide which list to show
+  finalLessonsToDisplay() {
+    if (this.searchQuery.trim() !== "") {
+      return this.filteredsearchResults;
+    }
+    return this.sortedResults;
+  }
+}
+,
+     created() {
         this.fetchLessons();
     },
     methods: {
@@ -115,7 +120,7 @@ new Vue({
     },
 
     // PUT update lesson spaces in backend
-    /*updateLessonSpaces: function () {
+    updateLessonSpaces: function () {
         const updates = this.cartItems.map(item => {
             // find the lesson in the list to get the updated spaces count
             const lesson = this.lessons.find(l => l.id === item.id);
@@ -146,8 +151,8 @@ new Vue({
                 });
             }
         },
-*/
-        /*/  removed added cart items:
+
+        //  removed added cart items:
         removeFromCart: function (item) {
             var originalLesson = this.lessons.find(l => l.id === item.id);
                 originalLesson.spaces++;
@@ -159,21 +164,36 @@ new Vue({
         isInCart: function (lesson) {
             return this.cartItems.some(item => item.id === lesson.id); 
                 return item.id === lesson.id;
-            });
-        },
-        processCheckout: function () {
-            if (this.canCheckout) {
+            },
+        
+      processCheckout: function () {
+        if (!this.canCheckout) return;
+
+        // Step 1: Save order
+        this.saveOrder()
+            .then(() => {
+                // Step 2: Update lesson spaces in DB
+                return this.updateLessonSpaces();
+            })
+            .then(() => {
+                // Step 3: Show success message
                 this.showCheckout = false;
                 this.showCart = false;
                 this.showSuccess = true;
-            }
-        },
-        resetApp: function () {
-            this.showSuccess = false;
-            this.cartItems = [];
-            this.checkoutForm.parentName = '';
-            this.checkoutForm.phone = '';
-        }
-    }
-});
 
+                // Optional: re-fetch lessons from server
+                this.fetchLessons();
+            })
+            .catch(err => console.error("Checkout error:", err));
+    },
+
+    resetApp: function () {
+        this.showSuccess = false;
+        this.cartItems = [];
+        this.checkoutForm.parentName = '';
+        this.checkoutForm.phone = '';
+    }
+        
+}
+    
+});
