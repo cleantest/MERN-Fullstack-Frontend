@@ -83,11 +83,12 @@ new Vue({
     }
     return this.sortedResults;
   }
-}
-,
-     created() {
+},
+    created() {
         this.fetchLessons();
     },
+
+    
     methods: {
            // Fetch lessons from the backend
         fetchLessons: function () {

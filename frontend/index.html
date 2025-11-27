@@ -152,7 +152,7 @@
 
       <div class="lessons-grid">
         <div
-          v-for="lesson in filteredsearchResults"
+          v-for="lesson in finalLessonsToDisplay"
           :key="lesson.id"
           class="lesson-card"
           :class="{ 'sold-out': lesson.spaces === 0 }"
