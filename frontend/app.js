@@ -71,6 +71,16 @@ new Vue({
           b.location.toLowerCase().localeCompare(a.location.toLowerCase())
         );
         break;
+        case 'subject-asc':
+        results.sort((a, b) =>
+          a.subject.toLowerCase().localeCompare(b.location.toLowerCase())
+        );
+        break;
+        case 'subject-desc':
+        results.sort((a, b) =>
+          b.subject.toLowerCase().localeCompare(a.location.toLowerCase())
+        );
+        break;
     }
 
     return results;
