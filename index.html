@@ -11,7 +11,7 @@
 <body>
   <div id="app">
     <header class="header">
-      <h1>After School Activities</h1>
+      <h1>Elite Learner's Hub</h1>
       <div class="header-actions">
         
         <button 
@@ -122,7 +122,7 @@
     <div v-if="showSuccess" class="success-overlay">
       <div class="success-modal">
         <h2>Booking Confirmed!</h2>
-        <p>Thank you {{ checkoutForm.parentName }}! Your classes have been booked.</p>
+        <p>Thank you {{ checkoutForm.parentName }}! Order successful!</p>
         <p>We'll contact you at {{ checkoutForm.phone }} with further details.</p>
         <button @click="resetApp" class="ok-btn">OK</button>
       </div>
@@ -131,8 +131,8 @@
     <!-- Main Content -->
     <main v-if="!showCart" class="main-content">
       <div class="intro">
-        <h2>Choose from our exciting after school activities</h2>
-        <p>Help your child discover new talents and make friends!</p>
+        <h2>Dexter's Tuition</h2>
+        <p>Evolution in knowledge!</p>
 <!-- Sort Controls -->
 
         <div class="sort-controls">

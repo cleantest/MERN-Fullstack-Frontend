@@ -73,12 +73,12 @@ new Vue({
         break;
         case 'subject-asc':
         results.sort((a, b) =>
-          a.subject.toLowerCase().localeCompare(b.location.toLowerCase())
+          a.subject.toLowerCase().localeCompare(b.subject.toLowerCase())
         );
         break;
         case 'subject-desc':
         results.sort((a, b) =>
-          b.subject.toLowerCase().localeCompare(a.location.toLowerCase())
+          b.subject.toLowerCase().localeCompare(a.subject.toLowerCase())
         );
         break;
     }
@@ -180,19 +180,19 @@ new Vue({
       processCheckout: function () {
         if (!this.canCheckout) return;
 
-        // Step 1: Save order
+        
         this.saveOrder()
             .then(() => {
-                // Step 2: Update lesson spaces in DB
+                //  Updates lesson spaces in DB
                 return this.updateLessonSpaces();
             })
             .then(() => {
-                // Step 3: Show success message
+                //  Shows success message
                 this.showCheckout = false;
                 this.showCart = false;
                 this.showSuccess = true;
 
-                // Optional: re-fetch lessons from server
+                // re-fetch lessons from server
                 this.fetchLessons();
             })
             .catch(err => console.error("Checkout error:", err));
