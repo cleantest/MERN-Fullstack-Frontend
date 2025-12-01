@@ -135,7 +135,7 @@ new Vue({
         const updates = this.cartItems.map(item => {
             // find the lesson in the list to get the updated spaces count
             const lesson = this.lessons.find(l => l.id === item.id);
-            return fetch(`${this.appURL}/lessons/${item.id}/spaces`, {
+            return fetch(`${this.appURL}/lessons/${item.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ spaces: lesson.spaces })
